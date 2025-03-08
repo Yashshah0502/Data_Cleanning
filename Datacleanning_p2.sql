@@ -154,3 +154,17 @@ from layoffs_stagging t1
 JOIN layoffs_stagging t2
 ON t1.company= t2.company AND t1.[location]=t2.[location]
 WHERE t1.industry IS NULL AND t2.industry IS NOT NULL
+
+-- Now will clean the cols where both total_laid_off and percentage off is null
+SELECT *
+FROM layoffs_stagging
+WHERE total_laid_off IS NULL AND percentage_laid_off IS NULL
+
+UPDATE layoffs_stagging
+set total_laid_off = Null
+where total_laid_off = 'NULL'
+
+DELETE
+FROM layoffs_stagging
+WHERE total_laid_off IS NULL 
+AND percentage_laid_off IS NULL
