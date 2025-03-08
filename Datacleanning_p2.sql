@@ -37,10 +37,10 @@ SELECT *,
     ) AS row_num
 FROM layoffs_stagging
 )
--- Alternate Query if we do not want to use the CTEs
 SELECT *
 from duplicarte_CTEs
 WHERE row_num >1 
+-- Alternate Query if we do not want to use the CTEs
 
 SELECT *
 FROM (SELECT *,
@@ -58,5 +58,67 @@ SELECT *
 FROM layoffs_stagging
 where company = 'Casper'
 
+-- Now will delete all the values which are duplicates
+WITH duplicarte_CTEs AS
+(
+SELECT *,
+    ROW_NUMBER() OVER (
+        PARTITION BY company, [location], industry, total_laid_off, 
+        percentage_laid_off, stage, country, funds_raised_millions, [date]
+        ORDER BY (SELECT NULL)  -- ORDER BY clause is mandatory
+    ) AS row_num
+FROM layoffs_stagging
+)
+DELETE
+from duplicarte_CTEs
+WHERE row_num >1 
 
+-- Will trim the space for standardizing the data
+SELECT company, TRIM(company)
+from layoffs_stagging
 
+SELECT *
+FROM layoffs_stagging
+-- WHERE company LIKE ' %';  
+WHERE LEFT(company,1) = ' ';
+
+SELECT industry, count(industry) 
+from layoffs_stagging
+WHERE industry like 'Crypto%'
+GROUP By industry
+ORDER BY industry
+
+UPDATE layoffs_stagging 
+SET industry = 'Crypto'
+WHERE industry like 'Crypto%'
+
+-- Now will look for the country
+SELECT DISTINCT [country]
+FROM layoffs_stagging
+order by 1
+
+SELECT country, count(country) 
+from layoffs_stagging
+WHERE country like 'United S%'
+GROUP By country
+ORDER BY country
+
+UPDATE layoffs_stagging
+SET country = 'United States'
+WHERE country like 'United S%'
+
+-- now will see for a date col.
+SELECT *
+FROM layoffs_stagging
+where [date] = 'Null'
+
+UPDATE layoffs_stagging
+SET [date] = Null
+where [date] = 'Null'
+
+SELECT [date],
+CONVERT(DATE, [date],101)
+FROM layoffs_stagging
+
+ALTER TABLE layoffs_stagging
+ALTER COLUMN [date] DATE
