@@ -122,3 +122,35 @@ FROM layoffs_stagging
 
 ALTER TABLE layoffs_stagging
 ALTER COLUMN [date] DATE
+
+
+-- Now will clean the industry col if there is a Null or a blank space and there is some records of a same company we can take the data from that
+
+SELECT *
+FROM layoffs_stagging
+WHERE (industry IS NULL OR industry = '' OR industry = 'Null')
+
+UPDATE layoffs_stagging
+SET industry = Null
+WHERE industry = 'Null'
+
+SELECT *
+FROM layoffs_stagging
+WHERE (industry IS NULL)
+
+SELECT *
+FROM layoffs_stagging
+WHERE company = 'Airbnb'
+
+SELECT *
+from layoffs_stagging t1
+JOIN layoffs_stagging t2
+ON t1.company= t2.company AND t1.[location]=t2.[location]
+WHERE t1.industry IS NULL AND t2.industry IS NOT NULL
+
+UPDATE t1
+SET t1.industry = t2.industry
+from layoffs_stagging t1
+JOIN layoffs_stagging t2
+ON t1.company= t2.company AND t1.[location]=t2.[location]
+WHERE t1.industry IS NULL AND t2.industry IS NOT NULL
