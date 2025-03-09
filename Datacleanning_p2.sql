@@ -168,3 +168,9 @@ DELETE
 FROM layoffs_stagging
 WHERE total_laid_off IS NULL 
 AND percentage_laid_off IS NULL
+
+ALTER TABLE layoffs_stagging
+ALTER COLUMN total_laid_off FLOAT 
+
+ALTER TABLE layoffs_stagging
+ALTER COLUMN percentage_laid_off FLOAT 
