@@ -61,3 +61,26 @@ WITH Rolling_Tot AS (
 SELECT [Month], total_laid_off, SUM(total_laid_off) OVER(ORDER BY [Month])
 FROM Rolling_Tot
 ORDER BY [Month];
+
+
+-- Will check for the company who laid off the most people in perticular year
+WITH company_info AS (
+    SELECT company, 
+           YEAR([date]) AS years,
+           SUM(total_laid_off) AS total_laid
+    FROM layoffs_stagging
+    WHERE YEAR([date]) IS NOT NULL
+    GROUP BY company, YEAR([date])
+),
+company_ranking_layoffs AS (
+    SELECT company, 
+           YEAR([date]) AS years,
+           SUM(total_laid_off) AS total_laid,
+           DENSE_RANK() OVER(PARTITION BY YEAR([date]) ORDER BY SUM(total_laid_off) DESC) AS rank
+    FROM layoffs_stagging
+    GROUP BY company, YEAR([date])
+)
+SELECT company ,years,total_laid,rank
+FROM company_ranking_layoffs
+where years is not NULL AND rank <=3;
+
